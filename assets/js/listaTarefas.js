@@ -16,7 +16,7 @@ inputTarefa.addEventListener('keypress', function(e){
         }
  });
 
- function limpaInput () {
+function limpaInput () {
     inputTarefa.value = '';
     inputTarefa.focus();
 }
@@ -27,8 +27,8 @@ function criaBotaoApagar (li) {
     const botaoApagar = document.createElement('button');
     botaoApagar.innerText = 'Apagar'; 
     //botaoApagar.classList.add('Apagar');
-    botaoApagar.setAttribute('class', 'apagar');
-    botaoApagar.setAttribute('title', 'Apagar esta tarefa');
+    botaoApagar.setAttribute('class', 'apagar'); // Para setar o atributo do botão
+    botaoApagar.setAttribute('title', 'Apagar esta tarefa'); // Para ficar visível a função do botão
     li.appendChild(botaoApagar);
 }
 
@@ -37,8 +37,9 @@ function criaTask (textInput) {
     li.innerText = textInput;
     tarefas.appendChild(li); // Para add a task com o botao
     limpaInput();
-    criaBotaoApagar();
-    salvarTarefas(); 
+    criaBotaoApagar(li);
+    salvarTarefas();
+   
 }
 
 // Capturar o click no botão de add a task 
@@ -46,3 +47,36 @@ bntTarefa.addEventListener('click', function(){
     if (!inputTarefa.value) return; // Se o retorno no botao for vazio 
     criaTask(inputTarefa.value); // add o valor da task 
 });
+
+document.addEventListener('click', function(e) {
+    const el = e.target;
+
+    if (el.classList.contains('apagar')) {
+        el.parentElement.remove(); // Para remover o pai do elemento no HTML (li)
+        salvarTarefas();
+    }
+});
+
+// Função para salvar as tarefas 
+function salvarTarefas() {
+    const liTarefas = tarefas.querySelectorAll('li'); // Selecionar todas as tasks 
+    const listaDeTarefas = []; // Array vazio para iterar sobre as tasks 
+
+    for (let tarefa of liTarefas) {
+        let tarefaTexto = tarefa.innerText;
+        tarefaTexto = tarefaTexto.replace('Apagar', '').trim();
+        listaDeTarefas.push(tarefaTexto);
+    }
+    const tarefasJSON = JSON.stringify(listaDeTarefas); // Salva o array como um JSON de strings 
+    localStorage.setItem('tarefas', tarefasJSON);
+    
+}
+function adicionaTarefasSalvas () {
+    const tarefas = localStorage.getItem('tarefas');
+    const listaDeTarefas = JSON.parse(tarefas); // Convertendo de volta o JSON para um objeto JS 
+
+    for (let tarefa of listaDeTarefas) {
+        criaTask(tarefa);
+    }
+}
+adicionaTarefasSalvas();
